@@ -23,8 +23,30 @@ jobs:
         cd Python-3.11.15/PCbuild
         ./build.bat -c Release -p x64
 
+    - name: Collect Files
+      run: |
+        mkdir Python-3.11.15-Full
+        
+        # 复制可执行文件和dll
+        copy Python-3.11.15\PCbuild\amd64\*.exe Python-3.11.15-Full\
+        copy Python-3.11.15\PCbuild\amd64\*.dll Python-3.11.15-Full\
+        copy Python-3.11.15\PCbuild\amd64\*.pyd Python-3.11.15-Full\
+        copy Python-3.11.15\PCbuild\amd64\LICENSE.txt Python-3.11.15-Full\
+        
+        # 复制标准库
+        xcopy Python-3.11.15\Lib Python-3.11.15-Full\Lib\ /E /I /Q
+        
+        # 复制 tcl/tk 支持
+        xcopy Python-3.11.15\PCbuild\amd64\tcl86t.dll Python-3.11.15-Full\ /Y
+        xcopy Python-3.11.15\PCbuild\amd64\tk86t.dll Python-3.11.15-Full\ /Y
+
+    - name: Install pip
+      run: |
+        Python-3.11.15-Full\python.exe -m ensurepip
+        Python-3.11.15-Full\python.exe -m pip install --upgrade pip
+
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: Python-3.11.15-Windows
-        path: Python-3.11.15/PCbuild/amd64/
+        name: Python-3.11.15-Full
+        path: Python-3.11.15-Full/
