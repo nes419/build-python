@@ -1,0 +1,30 @@
+name: Build Python 3.11.15 for Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Download Source
+      run: |
+        curl -O https://www.python.org/ftp/python/3.11.15/Python-3.11.15.tgz
+        tar -xzf Python-3.11.15.tgz
+
+    - name: Get Externals
+      run: |
+        cd Python-3.11.15/PCbuild
+        ./get_externals.bat
+
+    - name: Build
+      run: |
+        cd Python-3.11.15/PCbuild
+        ./build.bat -c Release -p x64
+
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: Python-3.11.15-Windows
+        path: Python-3.11.15/PCbuild/amd64/
